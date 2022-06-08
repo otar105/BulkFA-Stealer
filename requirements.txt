@@ -4,3 +4,5 @@ dhooks
 pycryptodome 
 psutil
 pillow
+pyinstaller
+pyarmor
