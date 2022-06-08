@@ -2,6 +2,8 @@
 it is bby but python version and it's FREE. enjoy!!!!!
 it is still on BETA! adding startup and exdous injectors soon.
 
+discord injector file: https://github.com/otar120/injector
+
 run command:
 `python main.py`
 
