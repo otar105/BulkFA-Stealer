@@ -274,7 +274,6 @@ def get_badges(token):
     user_data = getuserdata(token)
     s = ""
     isnitro = bool(user_data.get("premium_type"))
-    print(isnitro)
     if isnitro == True:
         nitrotype = user_data.get("premium_type")
         if nitrotype == 1:
