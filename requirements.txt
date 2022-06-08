@@ -1,0 +1,6 @@
+requests
+pywin32
+dhooks
+pycryptodome 
+psutil
+pillow
