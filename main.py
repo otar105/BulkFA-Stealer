@@ -373,7 +373,7 @@ def injector():
             for __dir in os.listdir(os.path.abspath(discord)):
                 if match(r'app-(\d*\.\d*)*', __dir):
                     app = os.path.abspath(disc_sep+__dir)
-                    inj_path = app+'\\modules\\discord_desktop_core-3\\discord_desktop_core\\'
+                    inj_path = app+'\\modules\\discord_desktop_core-1\\discord_desktop_core\\'
                     if os.path.exists(inj_path):
                         if startup not in argv[0]:
                             try:
