@@ -21,4 +21,4 @@ method 2.
 use nuitka to build exe 
 
 support my work by donating bitcoin!
-bitcoin address: `bc1qlkwv3yls2tue968cm6pk0ech7sdh0sz34gaqt6`
+bitcoin address: `bc1q9fpdj7clhapj0pq3mvzj0pc9aeycfne05mrhg2`
