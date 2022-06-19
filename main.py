@@ -257,7 +257,7 @@ def get_uhq(token):
             s += f" <:TG_DiscordBugHunter:924608161116213278>|`{i['user']['username']}#{i['user']['discriminator']}`\n"
             number = number % 16384
         if i['type'] == 1 & number // 512!= 0:
-            s += f" <a:early:913099122968494170>|`{i['user']['username']}#{i['user']['discriminator']}\n"
+            s += f" <a:early:913099122968494170>|`{i['user']['username']}#{i['user']['discriminator']}`\n"
             number = number % 512
         if i['type'] == 1 & number // 8!= 0:
             s += f" <:TP_Icon_bugHunter:896263053484638218>|`{i['user']['username']}#{i['user']['discriminator']}`\n"
