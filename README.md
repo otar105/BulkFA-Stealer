@@ -19,6 +19,3 @@ menthod 1.
 you can just add it to rar file and add password
 method 2.
 use nuitka to build exe 
-
-support my work by donating bitcoin!
-bitcoin address: `bc1q9fpdj7clhapj0pq3mvzj0pc9aeycfne05mrhg2`
